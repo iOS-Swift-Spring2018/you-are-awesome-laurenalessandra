@@ -11,8 +11,10 @@ import AVFoundation
 
 class ViewController: UIViewController {
     
-    @IBOutlet weak var messageLabel: UILabel!
+    // MARK: - Properties
     
+    @IBOutlet weak var messageLabel: UILabel!
+    @IBOutlet weak var soundSwitch: UISwitch!
     @IBOutlet weak var awesomeImage: UIImageView!
     var awesomePlayer = AVAudioPlayer()
     
@@ -30,13 +32,15 @@ class ViewController: UIViewController {
 
     }
     
-    func playSound(soundName: String) {
+    // MARK: - My Own Functions
+    
+    func playSound(soundName: String, audioPlayer: inout AVAudioPlayer) {
         // Can we load in the file soundName?
         if let sound = NSDataAsset(name: soundName) {
             // Check if sound.data is a sound file
             do {
-                try awesomePlayer = AVAudioPlayer(data: sound.data)
-                awesomePlayer.play()
+                try audioPlayer = AVAudioPlayer(data: sound.data)
+                audioPlayer.play()
             } catch {
                 // if sound.data is not a valid audio file
                 print("ERROR: data in \(soundName) couldn't be played as a sound.")
@@ -57,6 +61,18 @@ class ViewController: UIViewController {
         
     }
 
+    // MARK: - Actions
+    
+    @IBAction func soundSwitchPressed(_ sender: UISwitch) {
+        if !soundSwitch.isOn && soundNumber != -1 {
+            // stop playing
+            if soundNumber != -1 {
+                awesomePlayer.stop()
+            }
+        }
+        
+    }
+    
     @IBAction func showMessagePressed(_ sender: UIButton) {
         let messages = ["You Are Fantastic!",
                         "You Are Great!",
@@ -79,12 +95,16 @@ class ViewController: UIViewController {
         
     // Play a sound
 
-        soundNumber = nonRepeatingRandom(lastNumber: soundNumber, maxValue: numberOfSounds)
         
-        let soundName = "sound\(soundNumber)"
-        playSound(soundName: soundName)
+        if soundSwitch.isOn {
+            soundNumber = nonRepeatingRandom(lastNumber: soundNumber, maxValue: numberOfSounds)
+            let soundName = "sound\(soundNumber)"
+            playSound(soundName: soundName, audioPlayer: &awesomePlayer)
+            
+            
+            
+        }
 
-        
         
         
         
